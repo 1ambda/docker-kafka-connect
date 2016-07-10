@@ -1,4 +1,9 @@
-# docker-kafka-connect
+[![Docker Pulls](https://img.shields.io/docker/pulls/1ambda/kafka-connect.svg)](https://hub.docker.com/r/1ambda/kafka-connect/)
+[![Docker Stars](https://img.shields.io/docker/stars/1ambda/kafka-connect.svg)](https://hub.docker.com/r/1ambda/kafka-connect/)
+[![](https://badge.imagelayers.io/1ambda/kafka-connect:latest.svg)](https://imagelayers.io/?images=1ambda/kafka-connect:latest)
+
+docker-kafka-connect
+============
 
 Dockerized [Apache Kafka Connect](http://kafka.apache.org/documentation.html#connect) (distributed mode) 
 
