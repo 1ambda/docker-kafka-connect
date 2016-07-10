@@ -14,6 +14,7 @@ function error {
 
 set -e
 
+# Verify envs
 if [[ -z "$CONNECT_BOOTSTRAP_SERVERS" ]]; then
   error "EMPTY ENV 'CONNECT_BOOTSTRAP_SERVERS'"; exit 1
 fi
@@ -29,10 +30,14 @@ if [[ -z "$CONNECT_GROUP_ID" ]]; then
   warn "EMPTY ENV 'CONNECT_GROUP_ID'. USE DEFAULT VALUE"; unset $CONNECT_GROUP_ID
 fi
 
+# Set JMX
 export KAFKA_JMX_OPTS="-Dcom.sun.management.jmxremote -Djava.rmi.server.hostname=${CONNECT_REST_ADVERTISED_HOST_NAME} -Dcom.sun.management.jmxremote.rmi.port=9999 -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
 
-echo -e "\n" >> $CONNECT_CFG # Add newline
+# Extend CLASSPATH for custom connectors
+export CLASSPATH=${CLASSPATH}:${KAFKA_HOME}/connectors/*
 
+# Configure properties
+echo -e "\n" >> $CONNECT_CFG
 for VAR in `env`
 do
   if [[ $VAR =~ ^CONNECT_ && ! $VAR =~ ^CONNECT_CFG && ! $VAR =~ ^CONNECT_BIN ]]; then

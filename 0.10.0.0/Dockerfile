@@ -2,27 +2,31 @@ FROM anapsix/alpine-java:jdk8
 
 MAINTAINER 1ambda <1amb4a@gmail.com>
 
-# Install required packages
+# Install kafka
 
 ENV SCALA_VERSION="2.11" \
     KAFKA_VERSION="0.10.0.0"
+ENV KAFKA_HOME=/opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}
 
 ARG KAFKA_DIST=kafka_${SCALA_VERSION}-${KAFKA_VERSION}
 ARG KAFKA_DIST_TGZ=${KAFKA_DIST}.tgz
-ARG MIRROR=http://apache.mirrors.spacedump.net/kafka/${KAFKA_VERSION}
+ARG KAFKA_DIST_ASC=${KAFKA_DIST}.tgz.asc
 
-RUN apk add --update unzip wget curl docker jq coreutils
-
-# Install kafka
-
-RUN mkdir -p /opt && \
-    wget -q ${MIRROR}/${KAFKA_DIST_TGZ} -O /tmp/${KAFKA_DIST_TGZ} && \
+RUN set -x && \
+    apk add --no-cache unzip curl ca-certificates gnupg jq && \
+    eval $(gpg-agent --daemon) && \
+    MIRROR=`curl -sSL https://www.apache.org/dyn/closer.cgi\?as_json\=1 | jq -r '.preferred'` && \
+    curl -sSLO "${MIRROR}kafka/${KAFKA_VERSION}/${KAFKA_DIST_TGZ}" && \
+    curl -sSLO https://dist.apache.org/repos/dist/release/kafka/${KAFKA_VERSION}/${KAFKA_DIST_ASC} && \
+    curl -sSL  https://kafka.apache.org/KEYS | gpg -q --import - && \
+    gpg -q --verify ${KAFKA_DIST_ASC} && \
+    mkdir -p /opt && \
+    mv ${KAFKA_DIST_TGZ} /tmp && \
     tar xfz /tmp/${KAFKA_DIST_TGZ} -C /opt && \
-    rm /tmp/${KAFKA_DIST_TGZ}
+    rm /tmp/${KAFKA_DIST_TGZ} && \
+    apk del unzip curl ca-certificates gnupg
 
 # Set env
-
-ENV KAFKA_HOME=/opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}
 
 ENV PATH=$PATH:/${KAFKA_HOME}/bin \
     CONNECT_CFG=${KAFKA_HOME}/config/connect-distributed.properties \

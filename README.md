@@ -9,9 +9,9 @@ Dockerized [Apache Kafka Connect](http://kafka.apache.org/documentation.html#con
 
 ## Supported Tags
 
-- `0.10.0.0` [(0.10.0.0/Dockerfile)](https://github.com/1ambda/docker-kafka-connect/blob/master/0.10.0.0/Dockerfile)
+- `latest` [(0.10.0.0/Dockerfile)](https://github.com/1ambda/docker-kafka-connect/blob/master/0.10.0.0/Dockerfile)
 
-## Usage
+## Quick Start 
 
 ### with Docker Compose
 
@@ -60,9 +60,9 @@ $ docker run --rm --name connect \
     --link kafka:kafka 1ambda/kafka-connect
 ```
 
-## Environment Variables
+<br/>
 
-### Connect
+## Environment Variables
 
 Pass env variables starting with `CONNECT_` to configure `connect-distributed.properties`.  
 For example, If you want to set `offset.flush.interval.ms=15000`, use `CONNECT_OFFSET_FLUSH_INTERVAL_MS=15000`
@@ -73,6 +73,34 @@ For example, If you want to set `offset.flush.interval.ms=15000`, use `CONNECT_O
 - (*recommended*) `CONNECT_REST_ADVERTISED_PORT`
 
 Other connect configuration fields are optional. (see also [Kafka Connect Configs](http://kafka.apache.org/documentation.html#connectconfigs))
+
+## Scaling Up Connector Cluster 
+
+## How To Extend This Image
+
+You can extend this image by writing your own **Dockerfile** to add custom connect JARs.
+
+If you want to run additional connectors, add connector JARs to `${KAFKA_HOME}/connectors` in container.
+
+```
+FROM 1ambda/kafka-connect:latest
+
+# same as `cp -R connectors/ $KAFKA_HOME/`
+# the entrypoint will extends `$CLASSPATH` 
+# like `export CLASSPATH=${CLASSPATH}:${KAFKA_HOME}/connectors/*`
+
+COPY connectors $KAFKA_HOME/connectors
+```
+
+## Development
+
+- **SCALA_VERSION**: `2.11` 
+- **KAFKA_VERSION**: `0.10.0.0`
+- **KAFKA_HOME**: `/opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}`
+- **CONNECT_CFG**: `${KAFKA_HOME}/config/connect-distributed.properties`
+- **CONNECT_BIN**: `${KAFKA_HOME}/bin/connect-distributed.sh`
+- **CONNECT_PORT**: `8083` (exposed)
+- **JMX_PORT**: `9999` (exposed)
  
 # License
 
