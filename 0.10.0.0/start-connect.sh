@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-tag="[kafka-connect]"
+tag="[start-connect.sh]"
+
 function info {
   echo "$tag (INFO) : $1"
 }

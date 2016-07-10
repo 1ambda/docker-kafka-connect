@@ -39,8 +39,6 @@ services:
     ports:
       - "8083:8083"
     environment:
-      CONNECT_REST_ADVERTISED_HOST_NAME: connect
-      CONNECT_REST_ADVERTISED_PORT: 8083
       CONNECT_BOOTSTRAP_SERVERS: kafka:9092
 ```
 
@@ -57,9 +55,6 @@ $ docker run -d --name kafka \
     
 $ docker run --rm --name connect \
     -p 8083:8083 \
-    -e JMX_PORT=10000 \
-    -e CONNECT_REST_ADVERTISED_HOST_NAME=connect \
-    -e CONNECT_REST_ADVERTISED_PORT=8083 \
     -e CONNECT_BOOTSTRAP_SERVERS=kafka:9092 \
     -e CONNECT_GROUP_ID=connect-cluster-A \
     --link kafka:kafka 1ambda/kafka-connect
@@ -72,14 +67,13 @@ $ docker run --rm --name connect \
 Pass env variables starting with `CONNECT_` to configure `connect-distributed.properties`.  
 For example, If you want to set `offset.flush.interval.ms=15000`, use `CONNECT_OFFSET_FLUSH_INTERVAL_MS=15000`
 
-- (**required**) `CONNECT_REST_ADVERTISED_HOST_NAME`
-- (**required**) `CONNECT_REST_ADVERTISED_PORT`
 - (**required**) `CONNECT_BOOTSTRAP_SERVERS`
 - (*recommended*): `CONNECT_GROUP_ID` (default value: `connect-cluster`) 
+- (*recommended*) `CONNECT_REST_ADVERTISED_HOST_NAME`
+- (*recommended*) `CONNECT_REST_ADVERTISED_PORT`
 
-Other connect configuration fields are optional.  
-See also [Kafka Connect Configs](http://kafka.apache.org/documentation.html#connectconfigs).
+Other connect configuration fields are optional. (see also [Kafka Connect Configs](http://kafka.apache.org/documentation.html#connectconfigs))
  
 # License
 
-**Apache 2.0**
+Apache 2.0

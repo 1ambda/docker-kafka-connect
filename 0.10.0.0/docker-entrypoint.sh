@@ -1,21 +1,32 @@
 #!/usr/bin/env bash
 
+tag="[docker-entrypoint.sh]"
+
+function info {
+  echo "$tag (INFO) : $1"
+}
+function warn {
+  echo "$tag (WARN) : $1"
+}
+function error {
+  echo "$tag (ERROR): $1"
+}
+
 set -e
-
-if [[ -z "$CONNECT_REST_ADVERTISED_HOST_NAME" ]]; then
-  error "EMPTY ENV 'CONNECT_REST_ADVERTISED_HOST_NAME'"; exit 1
-fi
-
-if [[ -z "$CONNECT_REST_ADVERTISED_PORT" ]]; then
-  error "EMPTY ENV 'CONNECT_REST_ADVERTISED_PORT'"; exit 1
-fi
 
 if [[ -z "$CONNECT_BOOTSTRAP_SERVERS" ]]; then
   error "EMPTY ENV 'CONNECT_BOOTSTRAP_SERVERS'"; exit 1
 fi
 
+if [[ -z "$CONNECT_REST_ADVERTISED_HOST_NAME" ]]; then
+  warn "EMPTY ENV 'CONNECT_REST_ADVERTISED_HOST_NAME'"; unset $CONNECT_REST_ADVERTISED_HOST_NAME
+fi
+
+if [[ -z "$CONNECT_REST_ADVERTISED_PORT" ]]; then
+  warn "EMPTY ENV 'CONNECT_REST_ADVERTISED_PORT'"; unset $CONNECT_REST_ADVERTISED_PORT
+fi
 if [[ -z "$CONNECT_GROUP_ID" ]]; then
-  warn "EMPTY ENV 'CONNECT_GROUP_ID'. USE DEFAULT VALUE"; unset CONNECT_GROUP_ID
+  warn "EMPTY ENV 'CONNECT_GROUP_ID'. USE DEFAULT VALUE"; unset $CONNECT_GROUP_ID
 fi
 
 export KAFKA_JMX_OPTS="-Dcom.sun.management.jmxremote -Djava.rmi.server.hostname=${CONNECT_REST_ADVERTISED_HOST_NAME} -Dcom.sun.management.jmxremote.rmi.port=9999 -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
