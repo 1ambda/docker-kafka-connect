@@ -60,8 +60,6 @@ $ docker run --rm --name connect \
     --link kafka:kafka 1ambda/kafka-connect
 ```
 
-<br/>
-
 ## Environment Variables
 
 Pass env variables starting with `CONNECT_` to configure `connect-distributed.properties`.  
@@ -74,11 +72,7 @@ For example, If you want to set `offset.flush.interval.ms=15000`, use `CONNECT_O
 
 Other connect configuration fields are optional. (see also [Kafka Connect Configs](http://kafka.apache.org/documentation.html#connectconfigs))
 
-## Scaling Up Connector Cluster 
-
 ## How To Extend This Image
-
-You can extend this image by writing your own **Dockerfile** to add custom connect JARs.
 
 If you want to run additional connectors, add connector JARs to `${KAFKA_HOME}/connectors` in container.
 
