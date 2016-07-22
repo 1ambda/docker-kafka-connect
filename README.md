@@ -1,6 +1,5 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/1ambda/kafka-connect.svg)](https://hub.docker.com/r/1ambda/kafka-connect/)
 [![Docker Stars](https://img.shields.io/docker/stars/1ambda/kafka-connect.svg)](https://hub.docker.com/r/1ambda/kafka-connect/)
-[![](https://badge.imagelayers.io/1ambda/kafka-connect:latest.svg)](https://imagelayers.io/?images=1ambda/kafka-connect:latest)
 
 docker-kafka-connect
 ============
@@ -14,6 +13,8 @@ Dockerized [Apache Kafka Connect](http://kafka.apache.org/documentation.html#con
 ## Quick Start 
 
 ### with Docker Compose
+
+Write `docker-compose.yml` like and then execute `docker-compose up`
 
 ```yaml
 version: '2'
@@ -40,6 +41,7 @@ services:
       - "8083:8083"
     environment:
       CONNECT_BOOTSTRAP_SERVERS: kafka:9092
+      CONNECT_GROUP_ID: connect-cluster-A
 ```
 
 ### with Docker CLI
