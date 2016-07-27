@@ -50,7 +50,7 @@ services:
 $ docker run -d --name zk 31z4/zookeeper:3.4.8
 
 $ docker run -d --name kafka \
-    -e KAFKA_BROEKR_ID=0 \
+    -e KAFKA_BROKER_ID=0 \
     -e KAFKA_ADVERTISED_PORT=9092 \
     -e ZOOKEEPER_CONNECTION_STRING=zk:2181 \ 
     --link zk:zk ches/kafka
