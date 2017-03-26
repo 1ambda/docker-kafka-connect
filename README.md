@@ -8,7 +8,8 @@ Dockerized [Apache Kafka Connect](http://kafka.apache.org/documentation.html#con
 
 ## Supported Tags
 
-- `latest` [(0.10.0.0/Dockerfile)](https://github.com/1ambda/docker-kafka-connect/blob/master/0.10.0.0/Dockerfile)
+- `0.10.0.0` (2.11) [(0.10.0.0/Dockerfile)](https://github.com/1ambda/docker-kafka-connect/blob/master/0.10.0.0/Dockerfile)
+- `0.10.1.1` (2.11) [(0.10.1.0/Dockerfile)](https://github.com/1ambda/docker-kafka-connect/blob/master/0.10.1.1/Dockerfile)
 
 ## Quick Start 
 
