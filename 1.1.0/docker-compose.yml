@@ -1,28 +1,79 @@
 version: '2'
 services:
   zk:
-    image: 31z4/zookeeper:3.4.8
+    image: confluentinc/cp-zookeeper:4.1.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks: [kafkatestnetwork]
 
   kafka:
-    image: ches/kafka
-    links:
-      - zk
+    image: confluentinc/cp-kafka:4.1.0
+    networks: [kafkatestnetwork]
+    ports: ["9092:9092"]
     environment:
-      KAFKA_BROKER_ID: 0
-      KAFKA_ADVERTISED_HOST_NAME: kafka
-      KAFKA_ADVERTISED_PORT: 9092
-      ZOOKEEPER_CONNECTION_STRING: zk:2181
-      ZOOKEEPER_CHROOT: /broker-0
+      KAFKA_ZOOKEEPER_CONNECT: zk:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
+  hdfs:
+    image: sequenceiq/hadoop-docker
+    ports:
+      - "50070:50070"
+      - "50075:50075"
+      - "9000:9000"
+      - "50010:50010"
+      - "50020:50020"
+      - 19888
+      - 2122
+      - 49707
+      - 50090
+      - 8030
+      - 8031
+      - 8032
+      - 8033
+      - 8040
+      - 8042
+      - 8088
+    networks: [kafkatestnetwork]
+    volumes:
+      - ${PWD}:/mnt/pwd
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry
+    ports: ["8081:8081"]
+    networks: [kafkatestnetwork]
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zk:2181
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+    
   connect:
     build: .
-    image: 1ambda/kafka-connect
+    image: marcintustin/kafka-connect
+    networks: [kafkatestnetwork]
     links:
       - kafka
+      - hdfs
+      - schema-registry
     ports:
       - "8083:8083"
     environment:
       CONNECT_BOOTSTRAP_SERVERS: kafka:9092
       CONNECT_GROUP_ID: connect-cluster-A
+      CONNECT_REST_PORT: 8083
+      CONNECT_CONFIG_STORAGE_TOPIC: qk-config
+      CONNECT_OFFSET_STORAGE_TOPIC: qk-offset
+      CONNECT_STATUS_STORAGE_TOPIC: qk-status
+      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
+      CONNECT_INTERNAL_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
+      CONNECT_INTERNAL_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
+      CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      CONNECT_LOG4J_ROOT_LOGLEVEL: DEBUG
+      CONNECT_LOG4J_LOGGERS: "org.reflection=ERROR,org.apache.kafka.connect.json.JsonConverter=DEBUG,org.apache.kafka.connect.runtime.WorkerSinkTask=DEBUG"
+      
+      
 
+networks:
+  kafkatestnetwork: {}
 

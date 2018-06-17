@@ -33,8 +33,8 @@ fi
 # Set JMX
 export KAFKA_JMX_OPTS="-Dcom.sun.management.jmxremote -Djava.rmi.server.hostname=${CONNECT_REST_ADVERTISED_HOST_NAME} -Dcom.sun.management.jmxremote.rmi.port=9999 -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
 
-# Extend CLASSPATH for custom connectors
-export CLASSPATH=${CLASSPATH}:${KAFKA_HOME}/connectors/*
+# Extend CLASSPATH for additional jars
+export CLASSPATH=${CLASSPATH}:${KAFKA_HOME}/kafka-connect-plus-1.0.0.jar:${KAFKA_HOME}/extra/*
 
 # Configure properties
 echo -e "\n" >> $CONNECT_CFG
