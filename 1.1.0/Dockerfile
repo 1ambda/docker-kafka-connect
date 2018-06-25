@@ -1,6 +1,6 @@
 FROM anapsix/alpine-java:jdk8
 
-MAINTAINER Marcin Tustin <marcin@fwd.engineering>
+MAINTAINER Marcin Tustin <marcin@data.fwd.engineering>
 
 # Install kafka
 
@@ -30,15 +30,13 @@ RUN set -x && \
     mkdir -p /opt && \
     tar xfz ${KAFKA_DIST_TGZ} -C /opt && \
     rm ${KAFKA_DIST_TGZ} && \
-#    ${MAVEN_DIR}/bin/mvn package && \
+    ${MAVEN_DIR}/bin/mvn package && \
     mkdir -p ${KAFKA_HOME}/extra && \
-#    mv target/kafka-connect-plus-1.0.0.jar ${KAFKA_HOME}/extra/ && \
-#    rm -rf target/ pom.xml && \
+    mv target/kafka-connect-plus-1.0.0.jar ${KAFKA_HOME}/extra/ && \
+    rm -rf target/ pom.xml && \
     rm -rf ${MAVEN_DIR} ${MAVEN_TAR} && \
     apk del unzip curl ca-certificates gnupg
 
-# Development only - should be compiled inside the container (no orchestration to build outside)
-COPY target/kafka-connect-plus-1.0.0.jar ${KAFKA_HOME}/extra/
 
 # Set env
 
