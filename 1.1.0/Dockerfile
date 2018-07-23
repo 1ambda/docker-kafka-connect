@@ -1,16 +1,21 @@
 FROM anapsix/alpine-java:jdk8
 
-MAINTAINER 1ambda <1amb4a@gmail.com>
+MAINTAINER Marcin Tustin <marcin@data.fwd.engineering>
 
 # Install kafka
 
-ENV SCALA_VERSION="2.12" \
+ENV SCALA_VERSION="2.11" \
     KAFKA_VERSION="1.1.0"
 ENV KAFKA_HOME=/opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}
 
 ARG KAFKA_DIST=kafka_${SCALA_VERSION}-${KAFKA_VERSION}
 ARG KAFKA_DIST_TGZ=${KAFKA_DIST}.tgz
 ARG KAFKA_DIST_ASC=${KAFKA_DIST}.tgz.asc
+ARG MAVEN_VERSION=3.5.3
+ARG MAVEN_TAR=apache-maven-${MAVEN_VERSION}-bin.tar.gz
+ARG MAVEN_DIR=apache-maven-${MAVEN_VERSION}
+
+COPY pom.xml /
 
 RUN set -x && \
     apk add --no-cache unzip curl ca-certificates gnupg jq && \
@@ -18,13 +23,20 @@ RUN set -x && \
     MIRROR=`curl -sSL https://www.apache.org/dyn/closer.cgi\?as_json\=1 | jq -r '.preferred'` && \
     curl -sSLO "${MIRROR}kafka/${KAFKA_VERSION}/${KAFKA_DIST_TGZ}" && \
     curl -sSLO https://dist.apache.org/repos/dist/release/kafka/${KAFKA_VERSION}/${KAFKA_DIST_ASC} && \
+    curl -sSLO "${MIRROR}/maven/maven-3/${MAVEN_VERSION}/binaries/${MAVEN_TAR}" && \
+    tar xf ${MAVEN_TAR} && \
     curl -sSL  https://kafka.apache.org/KEYS | gpg -q --import - && \
     gpg -q --verify ${KAFKA_DIST_ASC} && \
     mkdir -p /opt && \
-    mv ${KAFKA_DIST_TGZ} /tmp && \
-    tar xfz /tmp/${KAFKA_DIST_TGZ} -C /opt && \
-    rm /tmp/${KAFKA_DIST_TGZ} && \
+    tar xfz ${KAFKA_DIST_TGZ} -C /opt && \
+    rm ${KAFKA_DIST_TGZ} && \
+    ${MAVEN_DIR}/bin/mvn package && \
+    mkdir -p ${KAFKA_HOME}/extra && \
+    mv target/kafka-connect-plus-1.0.0.jar ${KAFKA_HOME}/extra/ && \
+    rm -rf target/ pom.xml && \
+    rm -rf ${MAVEN_DIR} ${MAVEN_TAR} && \
     apk del unzip curl ca-certificates gnupg
+
 
 # Set env
 
